@@ -51,12 +51,12 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
 
         // Validar contraseña
-        if (validarContrasena(usuario.getContrasena())) {
+        if (!validarContrasena(usuario.getContrasena())) {
             throw new IllegalArgumentException("La contraseña debe tener al menos 6 caracteres y contener letras y números.");
         }
 
         // Validar formato de correo
-        if (validarCorreo(usuario.getCorreo())) {
+        if (!validarCorreo(usuario.getCorreo())) {
             throw new IllegalArgumentException("El formato del correo electrónico es inválido.");
         }
 
@@ -97,12 +97,12 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         // Validar contraseña si se está actualizando
         if (usuario.getContrasena() != null &&
-                validarContrasena(usuario.getContrasena())) {
+                !validarContrasena(usuario.getContrasena())) {
             throw new IllegalArgumentException("La contraseña debe tener al menos 6 caracteres y contener letras y números.");
         }
 
         // Validar formato de correo electrónico
-        if (validarCorreo(usuario.getCorreo())) {
+        if (!validarCorreo(usuario.getCorreo())) {
             throw new IllegalArgumentException("El formato del correo electrónico es inválido.");
         }
 
@@ -142,13 +142,13 @@ public class UsuarioServiceImpl implements UsuarioService {
                 throw new IllegalArgumentException("El correo ya está en uso por otro usuario.");
             }
             // Validar formato de correo electrónico
-            if (validarCorreo(usuarioParcial.getCorreo())) {
+            if (!validarCorreo(usuarioParcial.getCorreo())) {
                 throw new IllegalArgumentException("El formato del correo electrónico es inválido.");
             }
             usuario.setCorreo(usuarioParcial.getCorreo());
         }
         if (usuarioParcial.getContrasena() != null) {
-            if(validarContrasena(usuarioParcial.getContrasena())){
+            if(!validarContrasena(usuarioParcial.getContrasena())){
                 throw new IllegalArgumentException("La contraseña debe tener al menos 6 caracteres y contener letras y números.");
             }
             usuario.setContrasena(usuarioParcial.getContrasena());
@@ -180,12 +180,12 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     //metodo para validar la contraseña
     public boolean validarContrasena(String contrasena) {
-        return !Pattern.matches(passwordRegex, contrasena);
+        return Pattern.matches(passwordRegex, contrasena);
     }
 
     //metodo para validar el correo
     public boolean validarCorreo(String correo) {
-        return !EMAIL_PATTERN.matcher(correo).matches();
+        return EMAIL_PATTERN.matcher(correo).matches();
     }
 
 }
