@@ -52,7 +52,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         // Validar contraseña
         if (validarContrasena(usuario.getContrasena())) {
-            throw new IllegalArgumentException("La contraseña debe tener al menos 8 caracteres y contener letras y números.");
+            throw new IllegalArgumentException("La contraseña debe tener al menos 6 caracteres y contener letras y números.");
         }
 
         // Validar formato de correo
@@ -98,7 +98,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         // Validar contraseña si se está actualizando
         if (usuario.getContrasena() != null &&
                 validarContrasena(usuario.getContrasena())) {
-            throw new IllegalArgumentException("La contraseña debe tener al menos 8 caracteres y contener letras y números.");
+            throw new IllegalArgumentException("La contraseña debe tener al menos 6 caracteres y contener letras y números.");
         }
 
         // Validar formato de correo electrónico
