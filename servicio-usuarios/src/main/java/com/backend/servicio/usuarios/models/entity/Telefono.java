@@ -11,14 +11,17 @@ import java.util.UUID;
 @Table(name = "telefonos")
 public class Telefono implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    @Column(name = "id", columnDefinition = "VARCHAR(36)")
+    private String id;
+
     @NotBlank (message = "El número de teléfono es requerido")
     @Column(name = "numero")
     private String numero;
+
     @NotBlank (message = "El código de ciudad es requerido")
     @Column(name = "codigo_ciudad")
     private String codigoCiudad;
+
     @NotBlank (message = "El código de país es requerido")
     @Column(name = "codigo_pais")
     private String codigoPais;
@@ -29,22 +32,22 @@ public class Telefono implements Serializable {
     private Usuario usuario;
 
     public Telefono() {
-        // Constructor vacío, JPA se encarga de la generación del id
+        this.id = UUID.randomUUID().toString();
     }
 
-    public Telefono(UUID id, String numero, String codigoCiudad, String codigoPais) {
-        this.id = id;
+    public Telefono(String numero, String codigoCiudad, String codigoPais) {
+        this.id = UUID.randomUUID().toString();
         this.numero = numero;
         this.codigoCiudad = codigoCiudad;
         this.codigoPais = codigoPais;
     }
 
     // Getters and Setters
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -79,4 +82,5 @@ public class Telefono implements Serializable {
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
+
 }

@@ -35,7 +35,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findByIdUsuario(@PathVariable UUID id) {
+    public ResponseEntity<?> findByIdUsuario(@PathVariable String id) {
         try {
             Usuario usuario = usuarioService.findById(id);
             if (usuario == null) {
@@ -61,7 +61,7 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUsuario(@PathVariable UUID id, @Valid @RequestBody Usuario usuario) {
+    public ResponseEntity<?> updateUsuario(@PathVariable String id, @Valid @RequestBody Usuario usuario) {
         try {
             Usuario usuarioActualizado = usuarioService.update(id, usuario);
             if (usuarioActualizado == null) {
@@ -74,7 +74,7 @@ public class UsuarioController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> parcialUpdateUsuario(@PathVariable UUID id,@Valid @RequestBody Usuario usuario) {
+    public ResponseEntity<?> parcialUpdateUsuario(@PathVariable String id,@Valid @RequestBody Usuario usuario) {
         try {
             Usuario usuarioActualizado = usuarioService.parcialUpdate(id, usuario);
             if (usuarioActualizado == null) {
@@ -87,7 +87,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping(value = "/{id}", consumes = "*/*")
-    public ResponseEntity<?> deleteUsuario(@PathVariable UUID id) {
+    public ResponseEntity<?> deleteUsuario(@PathVariable String id) {
         try {
             usuarioService.delete(id);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

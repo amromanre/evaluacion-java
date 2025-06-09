@@ -22,6 +22,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
@@ -36,12 +37,12 @@ public class UsuarioControllerTest {
 
     private Usuario usuario;
     private List<Usuario> usuarioList;
-    private UUID userId;
+    private String userId;
     private UsuarioResponse usuarioResponse;
 
     @BeforeEach
     void setUp() {
-        userId = UUID.randomUUID();
+        userId = UUID.randomUUID().toString();
 
         usuario = new Usuario();
         usuario.setId(userId);
@@ -65,7 +66,7 @@ public class UsuarioControllerTest {
         usuarioList.add(usuario);
 
         usuarioResponse = new UsuarioResponse(
-                userId.toString(),
+                userId,
                 LocalDateTime.now(),
                 LocalDateTime.now(),
                 LocalDateTime.now(),
@@ -100,7 +101,7 @@ public class UsuarioControllerTest {
 
         // Then
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertTrue(response.getBody() instanceof MensajeErrorResponse);
+        assertInstanceOf(MensajeErrorResponse.class, response.getBody());
         MensajeErrorResponse errorResponse = (MensajeErrorResponse) response.getBody();
         assertEquals("No se encontraron registros", errorResponse.getMensaje());
         verify(usuarioService, times(1)).findAll();
@@ -117,7 +118,7 @@ public class UsuarioControllerTest {
 
         // Then
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertTrue(response.getBody() instanceof MensajeErrorResponse);
+        assertInstanceOf(MensajeErrorResponse.class, response.getBody());
         MensajeErrorResponse errorResponse = (MensajeErrorResponse) response.getBody();
         assertEquals("Error al obtener usuarios", errorResponse.getMensaje());
         verify(usuarioService, times(1)).findAll();
@@ -125,7 +126,7 @@ public class UsuarioControllerTest {
 
     @Test
     @DisplayName("Test para obtener un usuario por ID con éxito")
-    void findByIdUsuarioSuccess() {
+    void findByIdUsuarioSuccess() throws Exception{
         // Given
         given(usuarioService.findById(userId)).willReturn(usuario);
 
@@ -140,7 +141,7 @@ public class UsuarioControllerTest {
 
     @Test
     @DisplayName("Test para obtener un usuario por ID cuando no existe")
-    void findByIdUsuarioNotFound() {
+    void findByIdUsuarioNotFound() throws Exception {
         // Given
         given(usuarioService.findById(userId)).willReturn(null);
 
@@ -149,7 +150,7 @@ public class UsuarioControllerTest {
 
         // Then
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertTrue(response.getBody() instanceof MensajeErrorResponse);
+        assertInstanceOf(MensajeErrorResponse.class, response.getBody());
         MensajeErrorResponse errorResponse = (MensajeErrorResponse) response.getBody();
         assertEquals("Usuario no encontrado con el id: " + userId, errorResponse.getMensaje());
         verify(usuarioService, times(1)).findById(userId);
@@ -157,7 +158,7 @@ public class UsuarioControllerTest {
 
     @Test
     @DisplayName("Test para obtener un usuario por ID cuando ocurre una excepción")
-    void findByIdUsuarioException() {
+    void findByIdUsuarioException() throws Exception {
         // Given
         given(usuarioService.findById(userId)).willThrow(new RuntimeException("Error al obtener usuario"));
 
@@ -166,7 +167,7 @@ public class UsuarioControllerTest {
 
         // Then
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertTrue(response.getBody() instanceof MensajeErrorResponse);
+        assertInstanceOf(MensajeErrorResponse.class, response.getBody());
         MensajeErrorResponse errorResponse = (MensajeErrorResponse) response.getBody();
         assertEquals("Error al obtener usuario", errorResponse.getMensaje());
         verify(usuarioService, times(1)).findById(userId);
@@ -174,7 +175,7 @@ public class UsuarioControllerTest {
 
     @Test
     @DisplayName("Test para crear un usuario con éxito")
-    void createUsuarioSuccess() {
+    void createUsuarioSuccess() throws Exception {
         // Given
         given(usuarioService.save(any(Usuario.class))).willReturn(usuarioResponse);
 
@@ -189,7 +190,7 @@ public class UsuarioControllerTest {
 
     @Test
     @DisplayName("Test para crear un usuario con error")
-    void createUsuarioError() {
+    void createUsuarioError() throws Exception {
         // Given
         given(usuarioService.save(any(Usuario.class))).willReturn(null);
 
@@ -198,7 +199,7 @@ public class UsuarioControllerTest {
 
         // Then
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertTrue(response.getBody() instanceof MensajeErrorResponse);
+        assertInstanceOf(MensajeErrorResponse.class, response.getBody());
         MensajeErrorResponse errorResponse = (MensajeErrorResponse) response.getBody();
         assertEquals("Error al crear el usuario", errorResponse.getMensaje());
         verify(usuarioService, times(1)).save(usuario);
@@ -206,7 +207,7 @@ public class UsuarioControllerTest {
 
     @Test
     @DisplayName("Test para crear un usuario cuando ocurre una excepción")
-    void createUsuarioException() {
+    void createUsuarioException() throws Exception {
         // Given
         given(usuarioService.save(any(Usuario.class))).willThrow(new RuntimeException("Error al guardar usuario"));
 
@@ -215,7 +216,7 @@ public class UsuarioControllerTest {
 
         // Then
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertTrue(response.getBody() instanceof MensajeErrorResponse);
+        assertInstanceOf(MensajeErrorResponse.class, response.getBody());
         MensajeErrorResponse errorResponse = (MensajeErrorResponse) response.getBody();
         assertEquals("Error al guardar usuario", errorResponse.getMensaje());
         verify(usuarioService, times(1)).save(usuario);
@@ -247,7 +248,7 @@ public class UsuarioControllerTest {
 
         // Then
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertTrue(response.getBody() instanceof MensajeErrorResponse);
+        assertInstanceOf(MensajeErrorResponse.class, response.getBody());
         MensajeErrorResponse errorResponse = (MensajeErrorResponse) response.getBody();
         assertEquals("Usuario no encontrado con el id: " + userId, errorResponse.getMensaje());
         verify(usuarioService, times(1)).update(userId, usuario);
@@ -264,7 +265,7 @@ public class UsuarioControllerTest {
 
         // Then
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertTrue(response.getBody() instanceof MensajeErrorResponse);
+        assertInstanceOf(MensajeErrorResponse.class, response.getBody());
         MensajeErrorResponse errorResponse = (MensajeErrorResponse) response.getBody();
         assertEquals("Error al actualizar usuario", errorResponse.getMensaje());
         verify(usuarioService, times(1)).update(userId, usuario);
@@ -296,7 +297,7 @@ public class UsuarioControllerTest {
 
         // Then
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertTrue(response.getBody() instanceof MensajeErrorResponse);
+        assertInstanceOf(MensajeErrorResponse.class, response.getBody());
         MensajeErrorResponse errorResponse = (MensajeErrorResponse) response.getBody();
         assertEquals("Usuario no encontrado con el id: " + userId, errorResponse.getMensaje());
         verify(usuarioService, times(1)).parcialUpdate(userId, usuario);
@@ -313,7 +314,7 @@ public class UsuarioControllerTest {
 
         // Then
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertTrue(response.getBody() instanceof MensajeErrorResponse);
+        assertInstanceOf(MensajeErrorResponse.class, response.getBody());
         MensajeErrorResponse errorResponse = (MensajeErrorResponse) response.getBody();
         assertEquals("Error al actualizar usuario", errorResponse.getMensaje());
         verify(usuarioService, times(1)).parcialUpdate(userId, usuario);
@@ -345,7 +346,7 @@ public class UsuarioControllerTest {
 
         // Then
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertTrue(response.getBody() instanceof MensajeErrorResponse);
+        assertInstanceOf(MensajeErrorResponse.class, response.getBody());
         MensajeErrorResponse errorResponse = (MensajeErrorResponse) response.getBody();
         assertEquals("Error al eliminar usuario", errorResponse.getMensaje());
         verify(usuarioService, times(1)).delete(userId);

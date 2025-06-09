@@ -18,7 +18,9 @@ import java.util.UUID;
 @Table(name = "usuarios")
 public class Usuario implements Serializable {
     @Id
-    private UUID id;
+    @Column(name = "id", columnDefinition = "VARCHAR(36)")
+    private String id;
+
     @NotBlank(message = "El nombre es requerido")
     @Column(name = "nombre", nullable = false)
     private String nombre;
@@ -54,12 +56,12 @@ public class Usuario implements Serializable {
     private Boolean activo = true;
 
     public Usuario() {
+        this.id = UUID.randomUUID().toString();
         this.telefonos = new ArrayList<>();
-        this.id = UUID.randomUUID();
     }
 
-    public Usuario(UUID id, String nombre, String correo, String contrasena, List<Telefono> telefonos) {
-        this.id = id;
+    public Usuario(String nombre, String correo, String contrasena, List<Telefono> telefonos) {
+        this.id = UUID.randomUUID().toString();
         this.nombre = nombre;
         this.correo = correo;
         this.contrasena = contrasena;
@@ -72,11 +74,11 @@ public class Usuario implements Serializable {
 
     // Getters and Setters
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -172,4 +174,5 @@ public class Usuario implements Serializable {
         this.telefonos.add(telefono);
         telefono.setUsuario(this);
     }
+
 }

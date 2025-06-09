@@ -9,10 +9,10 @@ import java.util.UUID;
 public interface UsuarioService {
 
     List<Usuario> findAll();
-    Usuario findById(UUID id);
-    UsuarioResponse save(Usuario usuario);
-    Usuario update(UUID id, Usuario usuario);
-    Usuario parcialUpdate(UUID id, Usuario usuario) throws Exception;
-    void delete(UUID id) throws Exception;
+    Usuario findById(String id) throws Exception;
+    UsuarioResponse save(Usuario usuario) throws Exception;
+    Usuario update(String id, Usuario usuario);
+    Usuario parcialUpdate(String id, Usuario usuario) throws Exception;
+    void delete(String id) throws Exception;
 }
 

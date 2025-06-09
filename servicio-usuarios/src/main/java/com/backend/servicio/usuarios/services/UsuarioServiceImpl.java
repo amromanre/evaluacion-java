@@ -21,7 +21,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    @Value("${usuario.contrasena.patron:^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$}")
+    @Value("${usuario.contrasena.patron}")
     private String passwordRegex;
 
     // para validar formato de correo electrónico
@@ -34,26 +34,29 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public Usuario findById(UUID id) {
+    public Usuario findById(String id) throws Exception {
         Optional<Usuario> optionalUsuario = usuarioRepository.findById(id);
-        return optionalUsuario.orElse(null);
+        if (!optionalUsuario.isPresent()) {
+            throw new IllegalArgumentException("Usuario no encontrado con el id: " + id);
+        }
+        return optionalUsuario.get();
     }
 
     @Override
     @Transactional
-    public UsuarioResponse save(Usuario usuario) {
+    public UsuarioResponse save(Usuario usuario)throws Exception {
         // Validar si el correo ya existe
         if (usuarioRepository.existsByCorreo(usuario.getCorreo())) {
             throw new IllegalArgumentException("El correo ya está registrado");
         }
 
         // Validar contraseña
-        if (!Pattern.matches(passwordRegex, usuario.getContrasena())) {
+        if (validarContrasena(usuario.getContrasena())) {
             throw new IllegalArgumentException("La contraseña debe tener al menos 8 caracteres y contener letras y números.");
         }
 
         // Validar formato de correo
-        if (!EMAIL_PATTERN.matcher(usuario.getCorreo()).matches()) {
+        if (validarCorreo(usuario.getCorreo())) {
             throw new IllegalArgumentException("El formato del correo electrónico es inválido.");
         }
 
@@ -65,7 +68,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario nuevoUsuario = usuarioRepository.save(usuario);
 
         UsuarioResponse usuarioResponse =new UsuarioResponse(
-                nuevoUsuario.getId().toString(),
+                nuevoUsuario.getId(),
                 nuevoUsuario.getCreado(),
                 nuevoUsuario.getModificado(),
                 nuevoUsuario.getUltimoLogin(),
@@ -73,12 +76,11 @@ public class UsuarioServiceImpl implements UsuarioService {
                 nuevoUsuario.getActivo());
         return usuarioResponse;
 
-
     }
 
     @Override
     @Transactional
-    public Usuario update(UUID id, Usuario usuario) {
+    public Usuario update(String id, Usuario usuario) {
         Optional<Usuario> usuarioExistente = usuarioRepository.findById(id);
 
         if (!usuarioExistente.isPresent()) {
@@ -95,12 +97,12 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         // Validar contraseña si se está actualizando
         if (usuario.getContrasena() != null &&
-                !Pattern.matches(passwordRegex, usuario.getContrasena())) {
+                validarContrasena(usuario.getContrasena())) {
             throw new IllegalArgumentException("La contraseña debe tener al menos 8 caracteres y contener letras y números.");
         }
 
         // Validar formato de correo electrónico
-        if (!EMAIL_PATTERN.matcher(usuario.getCorreo()).matches()) {
+        if (validarCorreo(usuario.getCorreo())) {
             throw new IllegalArgumentException("El formato del correo electrónico es inválido.");
         }
 
@@ -122,7 +124,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional
-    public Usuario parcialUpdate(UUID id, Usuario usuarioParcial) throws Exception {
+    public Usuario parcialUpdate(String id, Usuario usuarioParcial) throws Exception {
         Optional<Usuario> usuarioExiste = usuarioRepository.findById(id);
         if (!usuarioExiste.isPresent()) {
             throw new IllegalArgumentException("Usuario no encontrado con el id: " + id);
@@ -140,12 +142,15 @@ public class UsuarioServiceImpl implements UsuarioService {
                 throw new IllegalArgumentException("El correo ya está en uso por otro usuario.");
             }
             // Validar formato de correo electrónico
-            if (!EMAIL_PATTERN.matcher(usuarioParcial.getCorreo()).matches()) {
+            if (validarCorreo(usuarioParcial.getCorreo())) {
                 throw new IllegalArgumentException("El formato del correo electrónico es inválido.");
             }
             usuario.setCorreo(usuarioParcial.getCorreo());
         }
         if (usuarioParcial.getContrasena() != null) {
+            if(validarContrasena(usuarioParcial.getContrasena())){
+                throw new IllegalArgumentException("La contraseña debe tener al menos 6 caracteres y contener letras y números.");
+            }
             usuario.setContrasena(usuarioParcial.getContrasena());
         }
 
@@ -164,7 +169,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional
-    public void delete(UUID id) throws Exception {
+    public void delete(String id) throws Exception {
 
         Optional<Usuario> optionalUsuario = usuarioRepository.findById(id);
         if (!optionalUsuario.isPresent()) {
@@ -173,5 +178,14 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuarioRepository.deleteById(optionalUsuario.get().getId());
     }
 
-}
+    //metodo para validar la contraseña
+    public boolean validarContrasena(String contrasena) {
+        return !Pattern.matches(passwordRegex, contrasena);
+    }
 
+    //metodo para validar el correo
+    public boolean validarCorreo(String correo) {
+        return !EMAIL_PATTERN.matcher(correo).matches();
+    }
+
+}

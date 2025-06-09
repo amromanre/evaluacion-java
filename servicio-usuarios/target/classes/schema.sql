@@ -7,7 +7,7 @@ DROP TABLE IF EXISTS usuarios;
 
 -- Crear tabla de usuarios
 CREATE TABLE usuarios (
-    id UUID PRIMARY KEY,
+    id VARCHAR(36) PRIMARY KEY,
     nombre VARCHAR(255) NOT NULL,
     correo VARCHAR(255) NOT NULL UNIQUE,
     contrasena VARCHAR(255) NOT NULL,
@@ -20,11 +20,11 @@ CREATE TABLE usuarios (
 
 -- Crear tabla de teléfonos con relación a usuarios
 CREATE TABLE telefonos (
-    id UUID PRIMARY KEY,
+    id VARCHAR(36) PRIMARY KEY,
     numero VARCHAR(255) NOT NULL,
     codigo_ciudad VARCHAR(255) NOT NULL,
     codigo_pais VARCHAR(255) NOT NULL,
-    usuario_id UUID NOT NULL,
+    usuario_id VARCHAR(36) NOT NULL,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
