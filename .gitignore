@@ -1,0 +1,47 @@
+# Archivos compilados y binarios
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Directorio target de Maven con archivos generados
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# Archivos específicos de IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Archivos específicos de Eclipse
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# Archivos específicos de NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+
+# Archivos específicos de VS Code
+.vscode/
+
+# Logs
+logs/
+*.log
+log/
+
+# Archivos temporales del sistema
+.DS_Store
+Thumbs.db
