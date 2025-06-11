@@ -1,19 +1,17 @@
 package com.backend.servicio.usuarios.services;
 
 import com.backend.servicio.usuarios.dto.UsuarioResponse;
+import com.backend.servicio.usuarios.dto.UsuarioMapper;
 import com.backend.servicio.usuarios.jwt.JwtAuthenticationFilter;
 import com.backend.servicio.usuarios.models.entity.Usuario;
 import com.backend.servicio.usuarios.models.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Service
@@ -30,21 +28,18 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public List<Usuario> findAll() {
-        return (List<Usuario>) usuarioRepository.findAll();
+        return usuarioRepository.findAll();
     }
 
     @Override
-    public Usuario findById(String id) throws Exception {
-        Optional<Usuario> optionalUsuario = usuarioRepository.findById(id);
-        if (!optionalUsuario.isPresent()) {
-            throw new IllegalArgumentException("Usuario no encontrado con el id: " + id);
-        }
-        return optionalUsuario.get();
+    public Usuario findById(String id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con el id: " + id));
     }
 
     @Override
     @Transactional
-    public UsuarioResponse save(Usuario usuario)throws Exception {
+    public UsuarioResponse save(Usuario usuario) {
         // Validar si el correo ya existe
         if (usuarioRepository.existsByCorreo(usuario.getCorreo())) {
             throw new IllegalArgumentException("El correo ya está registrado");
@@ -66,28 +61,14 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setUltimoLogin(LocalDateTime.now());
 
         Usuario nuevoUsuario = usuarioRepository.save(usuario);
-
-        UsuarioResponse usuarioResponse =new UsuarioResponse(
-                nuevoUsuario.getId(),
-                nuevoUsuario.getCreado(),
-                nuevoUsuario.getModificado(),
-                nuevoUsuario.getUltimoLogin(),
-                nuevoUsuario.getToken(),
-                nuevoUsuario.getActivo());
-        return usuarioResponse;
-
+        return UsuarioMapper.toUsuarioResponse(nuevoUsuario);
     }
 
     @Override
     @Transactional
     public Usuario update(String id, Usuario usuario) {
-        Optional<Usuario> usuarioExistente = usuarioRepository.findById(id);
-
-        if (!usuarioExistente.isPresent()) {
-            throw new IllegalArgumentException("Usuario no encontrado con el id: " + id);
-        }
-
-        Usuario existente = usuarioExistente.get();
+        Usuario existente = usuarioRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con el id: " + id));
 
         // Validar si el correo ya está en uso por otro usuario
         if (!existente.getCorreo().equals(usuario.getCorreo()) &&
@@ -124,13 +105,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional
-    public Usuario parcialUpdate(String id, Usuario usuarioParcial) throws Exception {
-        Optional<Usuario> usuarioExiste = usuarioRepository.findById(id);
-        if (!usuarioExiste.isPresent()) {
-            throw new IllegalArgumentException("Usuario no encontrado con el id: " + id);
-        }
-
-        Usuario usuario = usuarioExiste.get();
+    public Usuario parcialUpdate(String id, Usuario usuarioParcial) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con el id: " + id));
 
         // Actualizar solo los campos que se proporcionan
         if (usuarioParcial.getNombre() != null) {
@@ -169,13 +146,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional
-    public void delete(String id) throws Exception {
-
-        Optional<Usuario> optionalUsuario = usuarioRepository.findById(id);
-        if (!optionalUsuario.isPresent()) {
-            throw new IllegalArgumentException("Usuario no encontrado con el id: " + id);
-        }
-        usuarioRepository.deleteById(optionalUsuario.get().getId());
+    public void delete(String id) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con el id: " + id));
+        usuarioRepository.deleteById(usuario.getId());
     }
 
     //metodo para validar la contraseña
@@ -189,3 +163,4 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
 }
+
